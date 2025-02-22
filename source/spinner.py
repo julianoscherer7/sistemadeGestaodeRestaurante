@@ -1,16 +1,16 @@
-# spinner.py
 import tkinter as tk
 from PIL import Image, ImageTk, ImageSequence
 
 class Spinner:
-    def __init__(self, janela):
+    def __init__(self, janela, gif_path="source/spinner.gif", frame_interval=100):
         self.janela = janela
         self.frame_atual = 0
         self.frames = []  # Lista para armazenar as referências das imagens
+        self.frame_interval = frame_interval  # Intervalo entre os frames em milissegundos
 
         try:
             # Tenta carregar o GIF do spinner
-            self.spinner_gif = Image.open("source/spinner.gif")
+            self.spinner_gif = Image.open(gif_path)
             # Armazena os frames do GIF em uma lista
             self.frames = [ImageTk.PhotoImage(frame) for frame in ImageSequence.Iterator(self.spinner_gif)]
         except Exception as e:  # Captura qualquer exceção
@@ -33,4 +33,4 @@ class Spinner:
         self.label_spinner.config(image=self.frames[self.frame_atual])
 
         # Agenda a próxima atualização
-        self.janela.after(100, self.animar_spinner)  # 100ms entre os frames
+        self.janela.after(self.frame_interval, self.animar_spinner)  # Usa o intervalo personalizado

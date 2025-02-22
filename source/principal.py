@@ -1,28 +1,20 @@
 import tkinter as tk
 from tkinter.font import Font
 from mesas import tela_mesas
-from cardapio import tela_cardapio
 from pedidos import tela_pedidos
+from cardapio import tela_cardapio
 from relatorios import tela_relatorios
 
-def on_enter(event):
-    """Função chamada quando o mouse entra no botão."""
-    event.widget.config(bg="#2980B9")  # Muda a cor de fundo para um azul mais escuro
-
-def on_leave(event):
-    """Função chamada quando o mouse sai do botão."""
-    event.widget.config(bg="#3498DB")  # Volta à cor de fundo original
-
-def tela_principal():
+def tela_principal(parent, callback_login):
     # Configuração da janela
-    janela = tk.Tk()
+    janela = parent
     janela.title("Tela Principal")
-    janela.geometry("1024x768")  # Resolução maior
-    janela.configure(bg="#2C3E50")  # Fundo azul escuro moderno
+    janela.geometry("1024x768")
+    janela.configure(bg="#2C3E50")
 
     # Frame principal
     frame = tk.Frame(janela, bg="#2C3E50")
-    frame.place(relx=0.5, rely=0.5, anchor="center")  # Centraliza o frame
+    frame.place(relx=0.5, rely=0.5, anchor="center")
 
     # Fonte moderna para o título
     fonte_titulo = Font(family="Helvetica", size=28, weight="bold")
@@ -34,10 +26,10 @@ def tela_principal():
 
     # Botões para outras funcionalidades
     botoes = [
-        ("Gerenciar Mesas", tela_mesas),
-        ("Gerenciar Cardápio", tela_cardapio),
-        ("Gerenciar Pedidos", tela_pedidos),
-        ("Gerar Relatórios", tela_relatorios)
+        ("Gerenciar Mesas", lambda: tela_mesas(janela, lambda: tela_principal(janela, callback_login))),
+        ("Gerenciar Pedidos", lambda: tela_pedidos(janela, lambda: tela_principal(janela, callback_login))),
+        ("Gerenciar Cardápio", lambda: tela_cardapio(janela, lambda: tela_principal(janela, callback_login))),
+        ("Gerar Relatórios", lambda: tela_relatorios(janela, lambda: tela_principal(janela, callback_login)))
     ]
 
     for i, (texto, comando) in enumerate(botoes):
@@ -45,12 +37,12 @@ def tela_principal():
             frame,
             text=texto,
             font=fonte_texto,
-            bg="#3498DB",  # Azul mais claro
-            fg="#FFFFFF",  # Texto branco
-            activebackground="#2980B9",  # Azul mais escuro ao clicar
+            bg="#3498DB",
+            fg="#FFFFFF",
+            activebackground="#2980B9",
             activeforeground="#FFFFFF",
-            relief="flat",  # Remove borda padrão
-            bd=0,  # Remove borda
+            relief="flat",
+            bd=0,
             padx=30,
             pady=15,
             command=comando,
@@ -58,15 +50,19 @@ def tela_principal():
         )
         botao.grid(row=i + 1, column=0, columnspan=2, pady=10, sticky="ew")  # Alinha os botões horizontalmente
 
-        # Adiciona efeito de hover
-        botao.bind("<Enter>", on_enter)  # Quando o mouse entra no botão
-        botao.bind("<Leave>", on_leave)  # Quando o mouse sai do botão
-
-    # Configuração do grid para centralizar e alongar os botões
-    frame.grid_columnconfigure(0, weight=1)  # Centraliza os botões
-    frame.grid_columnconfigure(1, weight=1)  # Centraliza os botões
-
-    janela.mainloop()
-
-if __name__ == "__main__":
-    tela_principal()
+    # Botão para voltar ao login
+    botao_voltar = tk.Button(
+        frame,
+        text="Voltar para Login",
+        font=fonte_texto,
+        bg="#E74C3C",
+        fg="#FFFFFF",
+        activebackground="#C0392B",
+        activeforeground="#FFFFFF",
+        relief="flat",
+        bd=0,
+        padx=20,
+        pady=10,
+        command=callback_login  # Usa o callback para voltar à tela de login
+    )
+    botao_voltar.grid(row=len(botoes) + 1, column=0, columnspan=2, pady=10, sticky="ew")

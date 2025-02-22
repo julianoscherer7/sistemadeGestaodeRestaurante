@@ -1,8 +1,7 @@
-# cadastro.py
 import tkinter as tk
 from tkinter.font import Font
 from database import conectar
-from spinner import Spinner  # Importa a classe Spinner
+from spinner import Spinner
 
 def cadastrar_usuario(nome, email, senha):
     conexao = conectar()
@@ -21,7 +20,7 @@ def cadastrar_usuario(nome, email, senha):
         print("Falha ao conectar ao banco de dados.")
         return False
 
-def mostrar_carregamento(janela, frame):
+def mostrar_carregamento(janela, frame, callback):
     # Esconde os elementos do frame
     for widget in frame.winfo_children():
         widget.pack_forget()
@@ -30,12 +29,13 @@ def mostrar_carregamento(janela, frame):
     spinner = Spinner(janela)
 
     # Simula um tempo de carregamento
-    janela.after(2000, lambda: finalizar_carregamento(janela))
+    janela.after(2000, lambda: finalizar_carregamento(janela, callback))
 
-def finalizar_carregamento(janela):
+def finalizar_carregamento(janela, callback):
     janela.destroy()  # Fecha a tela de cadastro
+    callback()  # Chama o callback para voltar ao login
 
-def tela_cadastro():
+def tela_cadastro(parent, callback_login):
     def realizar_cadastro():
         nome = entry_nome.get()
         email = entry_email.get()
@@ -43,19 +43,19 @@ def tela_cadastro():
 
         if nome and email and senha:
             if cadastrar_usuario(nome, email, senha):
-                mostrar_carregamento(janela, frame)  # Mostra o spinner
+                mostrar_carregamento(janela, frame, callback_login)  # Passa o callback para voltar ao login
         else:
             label_erro.config(text="Preencha todos os campos!", fg="#E74C3C")
 
     # Configuração da janela
-    janela = tk.Tk()
+    janela = parent
     janela.title("Cadastro")
-    janela.geometry("400x300")  # Tamanho maior
-    janela.configure(bg="#2C3E50")  # Fundo azul escuro moderno
+    janela.geometry("1280x720")
+    janela.configure(bg="#2C3E50")
 
     # Frame principal
     frame = tk.Frame(janela, bg="#2C3E50")
-    frame.place(relx=0.5, rely=0.5, anchor="center")  # Centraliza o frame
+    frame.place(relx=0.5, rely=0.5, anchor="center")
 
     # Fonte moderna
     fonte_texto = Font(family="Helvetica", size=12)
@@ -87,23 +87,35 @@ def tela_cadastro():
         frame,
         text="Cadastrar",
         font=fonte_texto,
-        bg="#3498DB",  # Azul mais claro
-        fg="#FFFFFF",  # Texto branco
-        activebackground="#2980B9",  # Azul mais escuro ao clicar
+        bg="#3498DB",
+        fg="#FFFFFF",
+        activebackground="#2980B9",
         activeforeground="#FFFFFF",
-        relief="flat",  # Remove borda padrão
-        bd=0,  # Remove borda
+        relief="flat",
+        bd=0,
         padx=20,
         pady=10,
         command=realizar_cadastro
     )
     botao_cadastro.pack(pady=20)
 
+    # Botão de voltar para o login
+    botao_voltar = tk.Button(
+        frame,
+        text="Voltar para Login",
+        font=fonte_texto,
+        bg="#E74C3C",
+        fg="#FFFFFF",
+        activebackground="#C0392B",
+        activeforeground="#FFFFFF",
+        relief="flat",
+        bd=0,
+        padx=20,
+        pady=10,
+        command=lambda: callback_login()  # Usa o callback para voltar à tela de login
+    )
+    botao_voltar.pack(pady=10)
+
     # Label para mensagens de erro
     label_erro = tk.Label(frame, text="", font=fonte_texto, fg="#E74C3C", bg="#2C3E50")
     label_erro.pack()
-
-    janela.mainloop()
-
-if __name__ == "__main__":
-    tela_cadastro()

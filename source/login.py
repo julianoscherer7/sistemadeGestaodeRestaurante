@@ -1,10 +1,7 @@
-# login.py
 import tkinter as tk
 from tkinter.font import Font
 from database import conectar
-from cadastro import tela_cadastro
-from principal import tela_principal
-from spinner import Spinner  # Importa a classe Spinner
+from spinner import Spinner
 
 def verificar_login(email, senha):
     conexao = conectar()
@@ -16,7 +13,7 @@ def verificar_login(email, senha):
         return usuario
     return None
 
-def mostrar_carregamento(janela, frame):
+def mostrar_carregamento(janela, frame, callback):
     # Esconde os elementos do frame
     for widget in frame.winfo_children():
         widget.pack_forget()
@@ -25,31 +22,31 @@ def mostrar_carregamento(janela, frame):
     spinner = Spinner(janela)
 
     # Simula um tempo de carregamento
-    janela.after(2000, lambda: finalizar_carregamento(janela))
+    janela.after(2000, lambda: finalizar_carregamento(janela, callback))
 
-def finalizar_carregamento(janela):
+def finalizar_carregamento(janela, callback):
     janela.destroy()  # Fecha a tela de login
-    tela_principal()  # Abre a tela principal
+    callback()  # Chama o callback para abrir a próxima tela
 
-def tela_login():
+def tela_login(parent, callback_cadastro, callback_principal):
     def login():
         email = entry_email.get()
         senha = entry_senha.get()
         usuario = verificar_login(email, senha)
         if usuario:
-            mostrar_carregamento(janela, frame)  # Mostra o spinner
+            mostrar_carregamento(janela, frame, callback_principal)  # Passa o callback para a tela principal
         else:
             label_erro.config(text="Email ou senha incorretos!", fg="#E74C3C")
 
     # Configuração da janela
-    janela = tk.Tk()
+    janela = parent
     janela.title("Login")
-    janela.geometry("800x600")  # Resolução maior
-    janela.configure(bg="#2C3E50")  # Fundo azul escuro moderno
+    janela.geometry("1280x720")
+    janela.configure(bg="#2C3E50")
 
     # Frame principal
     frame = tk.Frame(janela, bg="#2C3E50")
-    frame.place(relx=0.5, rely=0.5, anchor="center")  # Centraliza o frame
+    frame.place(relx=0.5, rely=0.5, anchor="center")
 
     # Fonte moderna para o título
     fonte_titulo = Font(family="Helvetica", size=24, weight="bold")
@@ -76,12 +73,12 @@ def tela_login():
         frame,
         text="Entrar",
         font=fonte_texto,
-        bg="#3498DB",  # Azul mais claro
-        fg="#FFFFFF",  # Texto branco
-        activebackground="#2980B9",  # Azul mais escuro ao clicar
+        bg="#3498DB",
+        fg="#FFFFFF",
+        activebackground="#2980B9",
         activeforeground="#FFFFFF",
-        relief="flat",  # Remove borda padrão
-        bd=0,  # Remove borda
+        relief="flat",
+        bd=0,
         padx=20,
         pady=10,
         command=login
@@ -93,23 +90,18 @@ def tela_login():
         frame,
         text="Cadastrar",
         font=fonte_texto,
-        bg="#2ECC71",  # Verde
-        fg="#FFFFFF",  # Texto branco
-        activebackground="#27AE60",  # Verde mais escuro ao clicar
+        bg="#2ECC71",
+        fg="#FFFFFF",
+        activebackground="#27AE60",
         activeforeground="#FFFFFF",
-        relief="flat",  # Remove borda padrão
-        bd=0,  # Remove borda
+        relief="flat",
+        bd=0,
         padx=20,
         pady=10,
-        command=tela_cadastro  # Abre a tela de cadastro
+        command=callback_cadastro  # Usa o callback para abrir a tela de cadastro
     )
     botao_cadastro.pack(pady=10)
 
     # Label para mensagens de erro
     label_erro = tk.Label(frame, text="", font=fonte_texto, fg="#E74C3C", bg="#2C3E50")
     label_erro.pack()
-
-    janela.mainloop()
-
-if __name__ == "__main__":
-    tela_login()
