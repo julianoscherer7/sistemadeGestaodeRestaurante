@@ -1,7 +1,8 @@
 import tkinter as tk
-from cadastro import tela_cadastro
 from login import tela_login
+from cadastro import tela_cadastro  # Importação adicionada
 from principal import tela_principal
+from mesas import tela_mesas
 
 class App:
     def __init__(self):
@@ -13,25 +14,25 @@ class App:
         if self.janela_atual:
             self.janela_atual.destroy()  # Fecha a janela atual
         self.janela_atual = tk.Toplevel(self.janela_principal)
-        self.janela_atual.protocol("WM_DELETE_WINDOW", self.fechar_programa)  # Fecha o programa ao fechar a janela
         tela_login(self.janela_atual, self.abrir_tela_cadastro, self.abrir_tela_principal)
 
     def abrir_tela_cadastro(self):
         if self.janela_atual:
             self.janela_atual.destroy()  # Fecha a janela atual
         self.janela_atual = tk.Toplevel(self.janela_principal)
-        self.janela_atual.protocol("WM_DELETE_WINDOW", self.fechar_programa)  # Fecha o programa ao fechar a janela
         tela_cadastro(self.janela_atual, self.abrir_tela_login)
 
     def abrir_tela_principal(self):
         if self.janela_atual:
             self.janela_atual.destroy()  # Fecha a janela atual
         self.janela_atual = tk.Toplevel(self.janela_principal)
-        self.janela_atual.protocol("WM_DELETE_WINDOW", self.fechar_programa)  # Fecha o programa ao fechar a janela
-        tela_principal(self.janela_atual, self.abrir_tela_login)
+        tela_principal(self.janela_atual, self.abrir_tela_login, self.abrir_tela_mesas)
 
-    def fechar_programa(self):
-        self.janela_principal.destroy()  # Fecha a janela principal e encerra o programa
+    def abrir_tela_mesas(self):
+        if self.janela_atual:
+            self.janela_atual.destroy()  # Fecha a janela atual
+        self.janela_atual = tk.Toplevel(self.janela_principal)
+        tela_mesas(self.janela_atual, self.abrir_tela_principal)
 
     def iniciar(self):
         self.abrir_tela_login()  # Abre a tela de login inicialmente

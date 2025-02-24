@@ -1,11 +1,12 @@
 import tkinter as tk
+from tkinter import ttk
 from tkinter.font import Font
-from mesas import tela_mesas
-from pedidos import tela_pedidos
-from cardapio import tela_cardapio
-from relatorios import tela_relatorios
 
-def tela_principal(parent, callback_login):
+def tela_principal(parent, callback_login, callback_mesas, callback_pedidos, callback_cardapio, callback_relatorios):
+    def fechar_janela():
+        janela.destroy()  # Fecha a tela principal
+        callback_login()  # Abre a tela de login
+
     # Configuração da janela
     janela = parent
     janela.title("Tela Principal")
@@ -26,10 +27,10 @@ def tela_principal(parent, callback_login):
 
     # Botões para outras funcionalidades
     botoes = [
-        ("Gerenciar Mesas", lambda: tela_mesas(janela, lambda: tela_principal(janela, callback_login))),
-        ("Gerenciar Pedidos", lambda: tela_pedidos(janela, lambda: tela_principal(janela, callback_login))),
-        ("Gerenciar Cardápio", lambda: tela_cardapio(janela, lambda: tela_principal(janela, callback_login))),
-        ("Gerar Relatórios", lambda: tela_relatorios(janela, lambda: tela_principal(janela, callback_login)))
+        ("Gerenciar Mesas", callback_mesas),  # Abre a tela de mesas
+        ("Gerenciar Pedidos", callback_pedidos),  # Abre a tela de pedidos
+        ("Gerenciar Cardápio", callback_cardapio),  # Abre a tela de cardápio
+        ("Gerar Relatórios", callback_relatorios)  # Abre a tela de relatórios
     ]
 
     for i, (texto, comando) in enumerate(botoes):
@@ -63,6 +64,6 @@ def tela_principal(parent, callback_login):
         bd=0,
         padx=20,
         pady=10,
-        command=callback_login  # Usa o callback para voltar à tela de login
+        command=fechar_janela  # Usa o callback para voltar à tela de login
     )
     botao_voltar.grid(row=len(botoes) + 1, column=0, columnspan=2, pady=10, sticky="ew")
