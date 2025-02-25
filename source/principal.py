@@ -3,10 +3,6 @@ from tkinter import ttk
 from tkinter.font import Font
 
 def tela_principal(parent, callback_login, callback_mesas, callback_pedidos, callback_cardapio, callback_relatorios):
-    def fechar_janela():
-        janela.destroy()  # Fecha a tela principal
-        callback_login()  # Abre a tela de login
-
     # Configuração da janela
     janela = parent
     janela.title("Tela Principal")
@@ -27,10 +23,10 @@ def tela_principal(parent, callback_login, callback_mesas, callback_pedidos, cal
 
     # Botões para outras funcionalidades
     botoes = [
-        ("Gerenciar Mesas", callback_mesas),  # Abre a tela de mesas
-        ("Gerenciar Pedidos", callback_pedidos),  # Abre a tela de pedidos
-        ("Gerenciar Cardápio", callback_cardapio),  # Abre a tela de cardápio
-        ("Gerar Relatórios", callback_relatorios)  # Abre a tela de relatórios
+        ("Gerenciar Mesas", callback_mesas),
+        ("Gerenciar Pedidos", callback_pedidos),
+        ("Gerenciar Cardápio", callback_cardapio),
+        ("Gerar Relatórios", callback_relatorios)
     ]
 
     for i, (texto, comando) in enumerate(botoes):
@@ -64,6 +60,6 @@ def tela_principal(parent, callback_login, callback_mesas, callback_pedidos, cal
         bd=0,
         padx=20,
         pady=10,
-        command=fechar_janela  # Usa o callback para voltar à tela de login
+        command=callback_login  # Usa o callback para voltar à tela de login
     )
     botao_voltar.grid(row=len(botoes) + 1, column=0, columnspan=2, pady=10, sticky="ew")

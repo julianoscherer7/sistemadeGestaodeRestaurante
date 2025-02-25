@@ -1,6 +1,5 @@
-# relatorios.py
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from database import conectar
@@ -28,16 +27,36 @@ def gerar_relatorio_pedidos():
     else:
         messagebox.showerror("Erro", "Falha ao conectar ao banco de dados.")
 
-def tela_relatorios():
-    janela = tk.Tk()
+def tela_relatorios(parent, callback_principal):
+    janela = tk.Toplevel(parent)
     janela.title("Gerar Relatórios")
+    janela.geometry("600x400")
+    janela.configure(bg="#2C3E50")
 
-    tk.Label(janela, text="Clique no botão para gerar o relatório de pedidos.").pack(pady=20)
+    # Frame principal
+    frame = ttk.Frame(janela, padding="10")
+    frame.pack(pady=10)
+
+    # Título
+    ttk.Label(frame, text="Gerar Relatórios", font=("Helvetica", 18, "bold"), background="#2C3E50", foreground="#ECF0F1").pack(pady=10)
 
     # Botão para gerar o relatório
-    tk.Button(janela, text="Gerar Relatório", command=gerar_relatorio_pedidos).pack(pady=10)
+    ttk.Button(
+        frame,
+        text="Gerar Relatório de Pedidos",
+        command=gerar_relatorio_pedidos,
+        style='TButton'
+    ).pack(pady=20)
 
-    janela.mainloop()
+    # Botão para voltar à tela principal
+    ttk.Button(
+        frame,
+        text="Voltar",
+        command=lambda: [janela.destroy(), callback_principal()],
+        style='TButton'
+    ).pack(pady=20)
 
 if __name__ == "__main__":
-    tela_relatorios()
+    root = tk.Tk()
+    tela_relatorios(root, lambda: None)
+    root.mainloop()
