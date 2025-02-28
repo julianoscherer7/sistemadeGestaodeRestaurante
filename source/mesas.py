@@ -3,6 +3,7 @@ from tkinter.font import Font
 from database import conectar
 
 def listar_mesas():
+    """Lista todas as mesas do banco de dados."""
     conexao = conectar()
     if conexao:
         cursor = conexao.cursor()
@@ -13,6 +14,7 @@ def listar_mesas():
     return []
 
 def adicionar_mesa(numero, capacidade, status):
+    """Adiciona uma nova mesa ao banco de dados."""
     conexao = conectar()
     if conexao:
         try:
@@ -30,7 +32,9 @@ def adicionar_mesa(numero, capacidade, status):
         return False
 
 def tela_mesas(parent, callback_principal):
+    """Cria a tela de gerenciamento de mesas."""
     def atualizar_mesas():
+        """Atualiza a lista de mesas exibidas na tela."""
         # Limpa o frame das mesas
         for widget in frame_mesas.winfo_children():
             widget.destroy()
@@ -65,6 +69,7 @@ def tela_mesas(parent, callback_principal):
             botao_mesa.grid(row=i // 4, column=i % 4, padx=10, pady=10)  # Organiza em uma grade 4x4
 
     def adicionar_mesa_handler():
+        """Adiciona uma nova mesa ao banco de dados e atualiza a lista."""
         numero = entry_numero.get()
         capacidade = entry_capacidade.get()
         status = "Livre"  # Define o status inicial como "Livre"
@@ -80,8 +85,9 @@ def tela_mesas(parent, callback_principal):
             label_erro.config(text="Preencha todos os campos!", fg="#E74C3C")
 
     def fechar_janela():
-        janela.destroy()  # Fecha a tela de mesas
-        callback_principal()  # Abre a tela principal
+        """Fecha a tela de mesas e retorna à tela principal."""
+        frame.pack_forget()  # Oculta o frame atual
+        callback_principal()  # Reconstroi ou reexibe a tela principal
 
     # Configuração da janela
     janela = parent
@@ -161,3 +167,13 @@ def tela_mesas(parent, callback_principal):
 
     # Atualiza a lista de mesas ao abrir a tela
     atualizar_mesas()
+
+    # Funções para mostrar e ocultar a tela
+    def mostrar():
+        frame.pack(fill="both", expand=True, padx=20, pady=20)
+
+    def ocultar():
+        frame.pack_forget()
+
+    # Retorna um objeto com as funções mostrar e ocultar
+    return type('TelaMesas', (), {'mostrar': mostrar, 'ocultar': ocultar})()

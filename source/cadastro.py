@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter.font import Font
+from tkinter import ttk, messagebox
 from database import conectar
 from spinner import Spinner
 
@@ -47,8 +47,8 @@ def tela_cadastro(parent, callback_login):
         else:
             label_erro.config(text="Preencha todos os campos!", fg="#E74C3C")
 
-    # Configuração da janela
-    janela = parent
+    # Cria uma nova janela para o cadastro
+    janela = tk.Toplevel(parent)
     janela.title("Cadastro")
     janela.geometry("1280x720")
     janela.configure(bg="#2C3E50")
@@ -58,7 +58,7 @@ def tela_cadastro(parent, callback_login):
     frame.place(relx=0.5, rely=0.5, anchor="center")
 
     # Fonte moderna
-    fonte_texto = Font(family="Helvetica", size=12)
+    fonte_texto = ("Helvetica", 12)
 
     # Título
     titulo = tk.Label(frame, text="Cadastro", font=("Helvetica", 18, "bold"), fg="#ECF0F1", bg="#2C3E50")
@@ -112,7 +112,7 @@ def tela_cadastro(parent, callback_login):
         bd=0,
         padx=20,
         pady=10,
-        command=lambda: callback_login()  # Usa o callback para voltar à tela de login
+        command=lambda: [janela.destroy(), callback_login()]  # Fecha a tela de cadastro e volta ao login
     )
     botao_voltar.pack(pady=10)
 
