@@ -52,13 +52,16 @@ class App:
         tela_cadastro(self.root, self.voltar_login)
 
     def abrir_mesas(self):
-        # Verifica se a tela principal está criada
+    # Verifica se a tela principal está criada
         if self.tela_principal is not None:
-            self.tela_principal.ocultar()
-        
-        # Cria a tela de mesas apenas se ainda não foi criada
+            self.tela_principal.ocultar()  # Oculta a tela principal
+    
+    # Cria a tela de mesas apenas se ainda não foi criada
         if self.tela_mesas is None:
             self.tela_mesas = tela_mesas(self.root, self.voltar_principal)
+    
+        self.tela_mesas.mostrar()  # Exibe a tela de mesas
+
         
         self.tela_mesas.mostrar()
 
@@ -96,18 +99,24 @@ class App:
         self.tela_relatorios.mostrar()
 
     def voltar_principal(self):
-        # Função para voltar à tela principal
+    # Função para voltar à tela principal
         if self.tela_mesas is not None:
-            self.tela_mesas.ocultar()
+            self.tela_mesas.ocultar()  # Oculta a tela de mesas
         if self.tela_pedidos is not None:
             self.tela_pedidos.ocultar()
         if self.tela_cardapio is not None:
             self.tela_cardapio.ocultar()
         if self.tela_relatorios is not None:
             self.tela_relatorios.ocultar()
-        
+    
+    # Reconstroi a tela principal
         if self.tela_principal is not None:
-            self.tela_principal.mostrar()
+            self.tela_principal.ocultar()  # Oculta a tela principal atual
+            self.tela_principal = None  # Reseta a tela principal
+
+# Cria uma nova instância da tela principal
+        self.tela_principal = TelaPrincipal(self.root, self.voltar_login, self.abrir_mesas, self.abrir_pedidos, self.abrir_cardapio, self.abrir_relatorios)
+        self.tela_principal.mostrar()  # Exibe a tela principal
 
 if __name__ == "__main__":
     app = App()
