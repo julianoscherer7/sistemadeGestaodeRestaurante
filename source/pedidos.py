@@ -1,8 +1,25 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from tkinter.font import Font
 from datetime import datetime
 from database import conectar  # Importe a função de conexão com o banco de dados
+
+def atualizar_status_mesa(numero_mesa, status):
+    """Atualiza o status de uma mesa no banco de dados."""
+    conexao = conectar()
+    if conexao:
+        try:
+            cursor = conexao.cursor()
+            cursor.execute("UPDATE Mesas SET Status = %s WHERE Numero = %s", (status, numero_mesa))
+            conexao.commit()
+            return True
+        except Exception as e:
+            print(f"Erro ao atualizar status da mesa: {e}")
+            return False
+        finally:
+            conexao.close()
+    return False
 
 def tela_pedidos(parent, callback_principal):
     """Cria a tela de gerenciamento de pedidos."""
@@ -323,8 +340,13 @@ def tela_pedidos(parent, callback_principal):
                 self.pedido_atual["mesa"] = mesa
                 self.pedido_atual["horario"] = datetime.now()
                 self.pedidos.append(self.pedido_atual)
-                self.pedido_atual = {"mesa": None, "itens": {}, "horario": None}
-                self.tela_inicial()
+
+        # Atualiza o status da mesa para "Ocupada"
+                if atualizar_status_mesa(mesa, "Ocupada"):
+                    self.pedido_atual = {"mesa": None, "itens": {}, "horario": None}
+                    self.tela_inicial()
+                else:
+                    messagebox.showerror("Erro", "Falha ao atualizar o status da mesa.")
 
         def ver_pedidos(self):
             """Exibe a tela para visualizar os pedidos."""

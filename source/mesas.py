@@ -1,6 +1,5 @@
-
 import tkinter as tk
-from tkinter.font import Font
+from tkinter import ttk, messagebox
 from database import conectar
 
 def listar_mesas():
@@ -28,9 +27,23 @@ def adicionar_mesa(numero, capacidade, status):
             return False
         finally:
             conexao.close()
-    else:
-        print("Falha ao conectar ao banco de dados.")
-        return False
+    return False
+
+def atualizar_status_mesa(numero_mesa, status):
+    """Atualiza o status de uma mesa no banco de dados."""
+    conexao = conectar()
+    if conexao:
+        try:
+            cursor = conexao.cursor()
+            cursor.execute("UPDATE Mesas SET Status = %s WHERE Numero = %s", (status, numero_mesa))
+            conexao.commit()
+            return True
+        except Exception as e:
+            print(f"Erro ao atualizar status da mesa: {e}")
+            return False
+        finally:
+            conexao.close()
+    return False
 
 def tela_mesas(parent, callback_principal):
     """Cria a tela de gerenciamento de mesas."""
@@ -42,8 +55,8 @@ def tela_mesas(parent, callback_principal):
             self.frame.pack(fill="both", expand=True, padx=20, pady=20)
 
             # Fonte moderna
-            self.fonte_titulo = Font(family="Helvetica", size=24, weight="bold")
-            self.fonte_texto = Font(family="Helvetica", size=12)
+            self.fonte_titulo = ("Helvetica", 24, "bold")
+            self.fonte_texto = ("Helvetica", 12)
 
             # Título
             titulo = tk.Label(self.frame, text="Mesas Disponíveis", font=self.fonte_titulo, fg="#ECF0F1", bg="#2C3E50")
@@ -62,7 +75,7 @@ def tela_mesas(parent, callback_principal):
                 bd=0,
                 padx=20,
                 pady=10,
-                command=self.fechar_janela  # Fecha a tela de mesas e abre a tela principal
+                command=self.fechar_janela
             )
             botao_voltar.place(relx=0.95, rely=0.05, anchor="ne")  # Posiciona no canto superior direito
 
@@ -127,9 +140,13 @@ def tela_mesas(parent, callback_principal):
                 cor_fundo = "#2ECC71" if status == "Livre" else "#E74C3C"  # Verde para livre, vermelho para ocupada
                 cor_texto = "#FFFFFF"
 
-                # Cria o botão para a mesa
+                # Frame para cada mesa
+                frame_mesa = tk.Frame(self.frame_mesas, bg="#34495E", bd=2, relief="groove")
+                frame_mesa.grid(row=i // 4, column=i % 4, padx=10, pady=10)
+
+                # Botão para a mesa
                 botao_mesa = tk.Button(
-                    self.frame_mesas,
+                    frame_mesa,
                     text=f"Mesa {numero}\nCapacidade: {capacidade}\nStatus: {status}",
                     font=self.fonte_texto,
                     bg=cor_fundo,
@@ -143,7 +160,32 @@ def tela_mesas(parent, callback_principal):
                     width=15,
                     height=5
                 )
-                botao_mesa.grid(row=i // 4, column=i % 4, padx=10, pady=10)  # Organiza em uma grade 4x4
+                botao_mesa.pack(pady=5)
+
+                # Botão para limpar a mesa (se estiver ocupada)
+                if status == "Ocupada":
+                    botao_limpar = tk.Button(
+                        frame_mesa,
+                        text="Limpar Mesa",
+                        font=self.fonte_texto,
+                        bg="#3498DB",
+                        fg="#FFFFFF",
+                        activebackground="#2980B9",
+                        activeforeground="#FFFFFF",
+                        relief="flat",
+                        bd=0,
+                        padx=10,
+                        pady=5,
+                        command=lambda n=numero: self.limpar_mesa(n)
+                    )
+                    botao_limpar.pack(pady=5)
+
+        def limpar_mesa(self, numero_mesa):
+            """Altera o status da mesa para 'Livre' e atualiza a tela."""
+            if atualizar_status_mesa(numero_mesa, "Livre"):
+                self.atualizar_mesas()  # Atualiza a lista de mesas
+            else:
+                messagebox.showerror("Erro", "Falha ao limpar a mesa.")
 
         def adicionar_mesa_handler(self):
             """Adiciona uma nova mesa ao banco de dados e atualiza a lista."""

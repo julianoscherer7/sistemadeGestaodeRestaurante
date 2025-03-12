@@ -5,6 +5,7 @@ from reportlab.pdfgen import canvas
 from database import conectar
 
 def gerar_relatorio_pedidos():
+    """Gera um relatório de pedidos em formato PDF."""
     conexao = conectar()
     if conexao:
         cursor = conexao.cursor()
@@ -28,35 +29,82 @@ def gerar_relatorio_pedidos():
         messagebox.showerror("Erro", "Falha ao conectar ao banco de dados.")
 
 def tela_relatorios(parent, callback_principal):
-    janela = tk.Toplevel(parent)
-    janela.title("Gerar Relatórios")
-    janela.geometry("600x400")
-    janela.configure(bg="#2C3E50")
+    """Cria a tela de relatórios com layout moderno."""
+    class TelaRelatorios:
+        def __init__(self):
+            # Configuração da janela
+            self.parent = parent
+            self.frame = tk.Frame(parent, bg="#2C3E50")
+            self.frame.pack(fill="both", expand=True, padx=20, pady=20)
 
-    # Frame principal
-    frame = ttk.Frame(janela, padding="10")
-    frame.pack(pady=10)
+            # Fonte moderna
+            self.fonte_titulo = ("Helvetica", 24, "bold")
+            self.fonte_texto = ("Helvetica", 12)
 
-    # Título
-    ttk.Label(frame, text="Gerar Relatórios", font=("Helvetica", 18, "bold"), background="#2C3E50", foreground="#ECF0F1").pack(pady=10)
+            # Título
+            titulo = tk.Label(self.frame, text="Relatórios", font=self.fonte_titulo, fg="#ECF0F1", bg="#2C3E50")
+            titulo.pack(pady=20)
 
-    # Botão para gerar o relatório
-    ttk.Button(
-        frame,
-        text="Gerar Relatório de Pedidos",
-        command=gerar_relatorio_pedidos,
-        style='TButton'
-    ).pack(pady=20)
+            # Botão para gerar relatório de pedidos
+            botao_gerar_relatorio = tk.Button(
+                self.frame,
+                text="Gerar Relatório de Pedidos",
+                font=self.fonte_texto,
+                bg="#3498DB",
+                fg="#FFFFFF",
+                activebackground="#2980B9",
+                activeforeground="#FFFFFF",
+                relief="flat",
+                bd=0,
+                padx=20,
+                pady=10,
+                command=gerar_relatorio_pedidos
+            )
+            botao_gerar_relatorio.pack(pady=20)
 
-    # Botão para voltar à tela principal
-    ttk.Button(
-        frame,
-        text="Voltar",
-        command=lambda: [janela.destroy(), callback_principal()],
-        style='TButton'
-    ).pack(pady=20)
+            # Botão para voltar ao menu principal
+            botao_voltar = tk.Button(
+                self.frame,
+                text="Voltar ao Menu Principal",
+                font=self.fonte_texto,
+                bg="#E74C3C",
+                fg="#FFFFFF",
+                activebackground="#C0392B",
+                activeforeground="#FFFFFF",
+                relief="flat",
+                bd=0,
+                padx=20,
+                pady=10,
+                command=self.fechar_janela
+            )
+            botao_voltar.pack(pady=20)
 
+        def fechar_janela(self):
+            """Fecha a tela de relatórios e retorna ao menu principal."""
+            self.frame.pack_forget()  # Oculta o frame atual
+            callback_principal()  # Abre o menu principal
+
+        def mostrar(self):
+            """Mostra a tela de relatórios."""
+            self.frame.pack(fill="both", expand=True, padx=20, pady=20)
+
+        def ocultar(self):
+            """Oculta a tela de relatórios."""
+            self.frame.pack_forget()
+
+    return TelaRelatorios()
+
+# Exemplo de uso
 if __name__ == "__main__":
     root = tk.Tk()
-    tela_relatorios(root, lambda: None)
+    root.geometry("800x600")
+    root.title("Gestão de Restaurante")
+
+    def abrir_menu_principal():
+        print("Menu principal aberto!")
+
+    # Cria a tela de relatórios
+    tela_relatorios_instance = tela_relatorios(root, abrir_menu_principal)
+    tela_relatorios_instance.mostrar()
+
     root.mainloop()
